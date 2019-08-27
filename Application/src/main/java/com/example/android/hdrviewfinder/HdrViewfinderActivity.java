@@ -20,6 +20,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -47,6 +48,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -88,6 +90,7 @@ import java.util.Objects;
  * buffers between processes and subsystems.</p>
  */
 public class HdrViewfinderActivity extends AppCompatActivity implements
+        TextureView.SurfaceTextureListener,
         SurfaceHolder.Callback, CameraOps.ErrorDisplayer, CameraOps.CameraReadyListener {
 
     private static final String TAG = "HdrViewfinderDemo";
@@ -99,7 +102,7 @@ public class HdrViewfinderActivity extends AppCompatActivity implements
     /**
      * View for the camera preview.
      */
-    private FixedAspectSurfaceView mPreviewView;
+    private View mPreviewView;
 
     /**
      * Root view of this activity.
@@ -152,9 +155,17 @@ public class HdrViewfinderActivity extends AppCompatActivity implements
 
         rootView = findViewById(R.id.panels);
 
-        mPreviewView = (FixedAspectSurfaceView) findViewById(R.id.preview);
-        mPreviewView.getHolder().addCallback(this);
-        mPreviewView.setGestureListener(this, mViewListener);
+        mPreviewView = findViewById(R.id.preview);
+        if (mPreviewView instanceof FixedAspectSurfaceView) {
+            FixedAspectSurfaceView previewView = (FixedAspectSurfaceView) mPreviewView;
+
+            previewView.getHolder().addCallback(this);
+            previewView.setGestureListener(this, mViewListener);
+        }
+        else {
+            AutoFitTextureView previewView = (AutoFitTextureView) mPreviewView;
+            previewView.setSurfaceTextureListener(this);
+        }
 
         Button helpButton = (Button) findViewById(R.id.help_button);
         helpButton.setOnClickListener(mHelpButtonListener);
@@ -491,9 +502,17 @@ public class HdrViewfinderActivity extends AppCompatActivity implements
         mProcessor = new ViewfinderProcessor(mRS, outputSize);
         setupProcessor();
 
-        // Configure the output view - this will fire surfaceChanged
-        mPreviewView.setAspectRatio(outputAspect);
-        mPreviewView.getHolder().setFixedSize(outputSize.getWidth(), outputSize.getHeight());
+        if (mPreviewView instanceof FixedAspectSurfaceView) {
+            // Configure the output view - this will fire surfaceChanged
+            FixedAspectSurfaceView previewView = (FixedAspectSurfaceView) mPreviewView;
+            previewView.setAspectRatio(outputAspect);
+            previewView.getHolder().setFixedSize(outputSize.getWidth(), outputSize.getHeight());
+        }
+        else {
+            AutoFitTextureView previewView = (AutoFitTextureView) mPreviewView;
+            previewView.setRotation(90);
+            previewView.setAspectRatio(outputSize.getWidth(), outputSize.getHeight());
+        }
     }
 
     /**
@@ -610,6 +629,31 @@ public class HdrViewfinderActivity extends AppCompatActivity implements
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         mPreviewSurface = null;
+    }
+
+    /**
+     * Callbacks for the AutoFitTextureView
+     */
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+        mPreviewSurface = new Surface(texture);
+        setupProcessor();
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+        mPreviewSurface = new Surface(texture);
+        setupProcessor();
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+        mPreviewSurface = null;
+        return true;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture texture) {
     }
 
     /**
