@@ -158,13 +158,13 @@ public class HdrViewfinderActivity extends AppCompatActivity implements
         mPreviewView = findViewById(R.id.preview);
         if (mPreviewView instanceof FixedAspectSurfaceView) {
             FixedAspectSurfaceView previewView = (FixedAspectSurfaceView) mPreviewView;
-
             previewView.getHolder().addCallback(this);
             previewView.setGestureListener(this, mViewListener);
         }
         else {
             AutoFitTextureView previewView = (AutoFitTextureView) mPreviewView;
             previewView.setSurfaceTextureListener(this);
+            previewView.setGestureListener(this, mViewListener);
         }
 
         Button helpButton = (Button) findViewById(R.id.help_button);

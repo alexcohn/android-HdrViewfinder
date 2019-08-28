@@ -28,6 +28,8 @@ public class AutoFitTextureView extends TextureView {
     private int mRatioWidth = 0;
     private int mRatioHeight = 0;
 
+    private GestureDetector mGestureDetector;
+
     public AutoFitTextureView(Context context) {
         this(context, null);
     }
@@ -57,6 +59,17 @@ public class AutoFitTextureView extends TextureView {
         requestLayout();
     }
 
+    /**
+     * Set a gesture listener to listen for touch events
+     */
+    public void setGestureListener(Context context, GestureDetector.OnGestureListener listener) {
+        if (listener == null) {
+            mGestureDetector = null;
+        } else {
+            mGestureDetector = new GestureDetector(context, listener);
+        }
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -73,4 +86,8 @@ public class AutoFitTextureView extends TextureView {
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mGestureDetector != null && mGestureDetector.onTouchEvent(event);
+    }
 }
