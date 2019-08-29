@@ -594,14 +594,17 @@ public class HdrViewfinderActivity extends AppCompatActivity implements
                 mEvenExposureText.setEnabled(true);
                 mOddExposureText.setEnabled(true);
                 mAutoExposureText.setEnabled(false);
+                mAutoExposureText.setVisibility(View.GONE);
             } else if (tag == mOddExposureTag) {
                 mOddExposureText.setText(exposureText);
 
                 mEvenExposureText.setEnabled(true);
                 mOddExposureText.setEnabled(true);
                 mAutoExposureText.setEnabled(false);
+                mAutoExposureText.setVisibility(View.GONE);
             } else {
                 mAutoExposureText.setText(exposureText);
+                mAutoExposureText.setVisibility(View.VISIBLE);
 
                 mEvenExposureText.setEnabled(false);
                 mOddExposureText.setEnabled(false);

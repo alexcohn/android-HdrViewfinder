@@ -14,28 +14,26 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/panels"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.example.android.hdrviewfinder.HdrViewfinderActivity">
 
     <com.example.android.hdrviewfinder.AutoFitTextureView
         android:id="@+id/preview"
         android:layout_width="0px"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="4" />
+        android:layout_gravity="center_horizontal" />
 
     <LinearLayout
         android:id="@+id/control_bar_contents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_gravity="bottom"
         android:background="@android:color/background_light"
         android:orientation="horizontal"
         android:layout_margin="5dp">
@@ -48,7 +46,7 @@
 
         <TextView
             android:id="@+id/mode_label"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="16sp"
@@ -102,4 +100,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
